@@ -32,7 +32,6 @@ export function AuthForgotPassword({ className, ...props }: UserAuthFormProps) {
         resolver: zodResolver(userAuthSchema),
     });
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const searchParams = useSearchParams();
 
     const router = useRouter();
     const { setItem } = useStorage();
@@ -66,7 +65,7 @@ export function AuthForgotPassword({ className, ...props }: UserAuthFormProps) {
             description: "Please check your email for a reset link.",
         });
 
-        return router.push(searchParams?.get("from") || "/resetpassword");
+        return router.push("/resetpassword");
     }
 
     return (

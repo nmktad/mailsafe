@@ -10,7 +10,6 @@ import { Icons } from "@/components/icons";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import useStorage from "@/lib/hooks/useSession";
@@ -34,7 +33,6 @@ export function AuthResetPassword({ className, ...props }: UserAuthFormProps) {
         resolver: zodResolver(userAuthSchema),
     });
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const searchParams = useSearchParams();
 
     const router = useRouter();
     const { getItem, removeItem } = useStorage();
@@ -75,7 +73,7 @@ export function AuthResetPassword({ className, ...props }: UserAuthFormProps) {
 
         removeItem("email");
 
-        return router.push(searchParams?.get("from") || "/login");
+        return router.push("/login");
     }
 
     return (

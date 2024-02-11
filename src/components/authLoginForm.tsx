@@ -10,7 +10,6 @@ import { Icons } from "@/components/icons";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -34,9 +33,7 @@ export function AuthLoginForm({ className, ...props }: UserAuthFormProps) {
         resolver: zodResolver(userAuthSchema),
     });
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [isGitHubLoading, setIsGitHubLoading] = React.useState<boolean>(false);
     const [isGoogleLoading, setIsGoogleLoading] = React.useState<boolean>(false);
-    const searchParams = useSearchParams();
 
     const router = useRouter();
 
@@ -68,7 +65,7 @@ export function AuthLoginForm({ className, ...props }: UserAuthFormProps) {
             });
         }
 
-        return router.push(searchParams?.get("from") || "/m/inbox");
+        return router.push("/m/inbox");
     }
 
     return (
@@ -76,7 +73,7 @@ export function AuthLoginForm({ className, ...props }: UserAuthFormProps) {
             <Button
                 variant="outline"
                 type="button"
-                disabled={isLoading || isGitHubLoading || isGoogleLoading}
+                disabled={isLoading || isGoogleLoading}
                 onClick={() => {
                     setIsGoogleLoading(true);
                     // signIn("google");
@@ -112,7 +109,7 @@ export function AuthLoginForm({ className, ...props }: UserAuthFormProps) {
                             autoCapitalize="none"
                             autoComplete="email"
                             autoCorrect="off"
-                            disabled={isLoading || isGitHubLoading || isGoogleLoading}
+                            disabled={isLoading || isGoogleLoading}
                             {...register("email")}
                         />
                         {errors?.email && (
@@ -127,7 +124,7 @@ export function AuthLoginForm({ className, ...props }: UserAuthFormProps) {
                             id="password"
                             placeholder="password"
                             type="password"
-                            disabled={isLoading || isGitHubLoading || isGoogleLoading}
+                            disabled={isLoading || isGoogleLoading}
                             {...register("password")}
                         />
                         {errors?.email && (
@@ -136,7 +133,7 @@ export function AuthLoginForm({ className, ...props }: UserAuthFormProps) {
                             </p>
                         )}
                     </div>
-                    <Button disabled={isLoading || isGitHubLoading || isGoogleLoading}>
+                    <Button disabled={isLoading || isGoogleLoading}>
                         {isLoading && (
                             <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                         )}
