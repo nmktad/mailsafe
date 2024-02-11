@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import useStorage from "@/lib/hooks/useSession";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> { }
 
@@ -40,10 +41,39 @@ export function AuthRegisterForm({ className, ...props }: UserAuthFormProps) {
 
     const router = useRouter();
 
+    const { executeRecaptcha } = useGoogleReCaptcha();
+
     //TODO: Add searchparams from useSearchParams
 
     async function onSubmit(data: FormData) {
         setIsLoading(true);
+
+        if (!executeRecaptcha) {
+            return toast({
+                title: "Something went wrong.",
+                description: "We couldn't verify you as a human.",
+                variant: "destructive",
+            });
+        }
+
+        const gReCaptchaToken = await executeRecaptcha("register");
+
+        if (!gReCaptchaToken) {
+            return toast({
+                title: "Something went wrong.",
+                description: "We couldn't verify you as a human.",
+                variant: "destructive",
+            });
+        }
+
+        const response = await fetch("/api/recaptcha", {
+            method: "POST",
+            headers: {
+                Accept: "application/json, text/plain, */*",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ gReCaptchaToken }),
+        })
 
         const registerResult = await fetch("/api/auth/register", {
             method: "POST",
@@ -52,8 +82,6 @@ export function AuthRegisterForm({ className, ...props }: UserAuthFormProps) {
             },
             body: JSON.stringify(data),
         });
-
-        console.log({ registerResult });
 
         if (!registerResult.ok) {
             return toast({

@@ -1,4 +1,3 @@
-import { error } from "console";
 import winston from "winston";
 import DailyRotateFile from 'winston-daily-rotate-file';
 

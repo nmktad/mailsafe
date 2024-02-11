@@ -51,7 +51,6 @@ export function AuthResetPassword({ className, ...props }: UserAuthFormProps) {
         setIsLoading(true);
 
         const dataTBS = { ...data, email };
-        console.log({ dataTBS });
 
         const resetPassRes = await fetch("/api/auth/resetpassword", {
             method: "POST",

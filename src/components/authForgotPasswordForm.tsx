@@ -39,8 +39,6 @@ export function AuthForgotPassword({ className, ...props }: UserAuthFormProps) {
     async function onSubmit(data: FormData) {
         setIsLoading(true);
 
-        console.log({ data });
-
         const result = await fetch(`/api/send?purpose=forgot-password&email=${data.email}`, {
             method: "POST",
             headers: {
