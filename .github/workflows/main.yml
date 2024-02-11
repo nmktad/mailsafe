@@ -1,0 +1,46 @@
+name: SupaStorage-backup
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+  # Runs twice a day. Once at 8:00, then at 20:00.
+    - cron: '0 8,20 * * *' 
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+         ref: ${{ github.head_ref }}
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies and perform backup
+      run: |
+        pip install supabase
+        [[ -d supabase_storage_backup ]] || mkdir supabase_storage_backup
+        cd supabase_storage_backup
+        wget https://raw.githubusercontent.com/mansueli/Supa-Migrate/main/storage-backup.py
+        chmod +x storage-backup.py
+        python storage-backup.py
+        rm storage-backup.py
+      shell: bash
+
+    - name: Set current date as env variable
+      run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+# Option A: Storing into the repo (should be private)        
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Supabase Storage backup - ${{ env.NOW }}
