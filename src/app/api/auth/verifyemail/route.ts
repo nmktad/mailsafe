@@ -1,9 +1,8 @@
 import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-export const otpSchema = z.object({
+const otpSchema = z.object({
     otp: z.string().length(5),
     email: z.string().email()
 });

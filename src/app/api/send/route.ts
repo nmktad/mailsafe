@@ -9,7 +9,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const dynamic = 'force-dynamic'
 
-export const OtpSchema = z.object({
+const OtpSchema = z.object({
     email: z.string().email(),
 });
 
