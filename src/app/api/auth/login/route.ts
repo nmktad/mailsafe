@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN!;
 
         const token = await signJWT(
-            { sub: user.id },
+            { sub: user.id, role: user.role },
             { exp: `${JWT_EXPIRES_IN}m` }
         );
 
@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
         logger.info({
             message: "User logged in",
             userId: user.id,
+            userRole: user.role,
             userEmail: user.email,
             ip: req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for"),
         });

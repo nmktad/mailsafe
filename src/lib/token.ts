@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 
 export const signJWT = async (
-  payload: { sub: string },
+  payload: { sub: string, role: string },
   options: { exp: string }
 ) => {
   try {
@@ -11,6 +11,7 @@ export const signJWT = async (
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
       .setIssuedAt()
       .setSubject(payload.sub)
+      .setAudience('http://localhost:3000')
       .sign(secret);
   } catch (error) {
     throw error;

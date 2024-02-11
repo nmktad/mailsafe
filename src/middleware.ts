@@ -4,6 +4,7 @@ import { verifyJWT } from "./lib/token";
 interface AuthenticatedRequest extends NextRequest {
   user: {
     id: string;
+    role: string;
   };
 }
 
@@ -34,9 +35,11 @@ export async function middleware(req: NextRequest) {
 
   try {
     if (token) {
-      const { sub } = await verifyJWT<{ sub: string }>(token);
+      const { sub, role } = await verifyJWT<{ sub: string, role: string }>(token);
       response.headers.set("X-USER-ID", sub);
-      (req as AuthenticatedRequest).user = { id: sub };
+      (req as AuthenticatedRequest).user = {
+        id: sub, role: role
+      };
     }
   } catch (error) {
     redirectToLogin = true;
@@ -51,6 +54,7 @@ export async function middleware(req: NextRequest) {
 
   const authUser = (req as AuthenticatedRequest).user;
 
+
   if (!authUser) {
     return NextResponse.redirect(
       new URL(
@@ -63,14 +67,24 @@ export async function middleware(req: NextRequest) {
     );
   }
 
+  if (req.url.includes("/register") && authUser && authUser.role != "ADMIN") {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  if (req.url.startsWith("/m") && !authUser) {
+    return NextResponse.redirect(
+      '/login'
+    )
+  }
+
   if (req.url.includes("/login") && authUser) {
-    return NextResponse.redirect(new URL("/profile", req.url));
+    return NextResponse.redirect(new URL("/m/inbox", req.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/profile", "/login", "/api/users/:path*", "/api/auth/logout"],
+  matcher: ["/profile", "/login", '/register', '/m/:path*', "/api/users/:path*", "/api/auth/logout"],
 };
 

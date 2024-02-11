@@ -3,7 +3,7 @@ import { hash } from "bcryptjs";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-export const resetPassword = z.object({
+const resetPassword = z.object({
     email: z.string().email(),
     otp: z.string().length(5),
     password: z.string().min(8).max(32),
