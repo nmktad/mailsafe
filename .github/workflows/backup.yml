@@ -14,7 +14,7 @@ jobs:
     permissions:
       contents: write
     env:
-      supabase_db_url: ${{ secrets.SUPABASE_URL }
+      supabase_db_url: ${{ secrets.SUPABASE_URL }}
     steps:
       - uses: actions/checkout@v3
         with:
