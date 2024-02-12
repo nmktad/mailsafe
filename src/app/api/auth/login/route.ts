@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { logger } from "@/lib/logging";
+import ratelimit from "@/lib/ratelimit";
 import { signJWT } from "@/lib/token";
 import { userAuthSchema } from "@/lib/validations/auth";
 import { compare } from "bcryptjs";
@@ -9,6 +10,14 @@ import { z } from "zod";
 
 export async function POST(req: NextRequest) {
     try {
+        const result = await ratelimit.limit(req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for')!)
+
+        if (!result.success) {
+            return NextResponse.json({
+                msg: "Rate limit exceeded", status: "error"
+            }, { status: 429 })
+        }
+
         const body = (await req.json()) as z.infer<typeof userAuthSchema>;
         const data = userAuthSchema.parse(body);
 
@@ -67,15 +76,18 @@ export async function POST(req: NextRequest) {
                 value: user.id,
                 maxAge: tokenMaxAge,
             }),
+            response.headers.set('X-RateLimit-Limit', result.limit.toString()),
+            response.headers.set('X-RateLimit-Remaining', result.remaining.toString()),
+            response.headers.set('X-RateLimit-Reset', result.reset.toString())
         ]);
 
-        // logger.info({
-        //     message: "User logged in",
-        //     userId: user.id,
-        //     userRole: user.role,
-        //     userEmail: user.email,
-        //     ip: req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for"),
-        // });
+        logger.info({
+            message: "User logged in",
+            userId: user.id,
+            userRole: user.role,
+            userEmail: user.email,
+            ip: req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for"),
+        });
 
         return response;
     } catch (error: any) {

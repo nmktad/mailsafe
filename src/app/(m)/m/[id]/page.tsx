@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { computeHash } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
@@ -35,6 +36,8 @@ export default async function EmailPage(
         );
     }
 
+    const verify = computeHash({ subject: email.subject, message: email.text });
+
     return (
         <div className="w-full flex justify-center h-screen">
             <Suspense fallback={<div>loading</div>}>
@@ -47,6 +50,9 @@ export default async function EmailPage(
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 {`To' formatEmailString(email) : 'Me'}`}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {`Validated' : ${verify === email.hash}`}
                             </p>
                             <time className="text-xs text-gray-500 dark:text-gray-400">
                                 {new Date(email.createdAt).toLocaleString()}
