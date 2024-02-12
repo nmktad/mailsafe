@@ -69,15 +69,13 @@ export async function POST(req: NextRequest) {
             }),
         ]);
 
-        if (process.env.NODE_ENV === "development") {
-            logger.info({
-                message: "User logged in",
-                userId: user.id,
-                userRole: user.role,
-                userEmail: user.email,
-                ip: req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for"),
-            });
-        }
+        // logger.info({
+        //     message: "User logged in",
+        //     userId: user.id,
+        //     userRole: user.role,
+        //     userEmail: user.email,
+        //     ip: req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for"),
+        // });
 
         return response;
     } catch (error: any) {
