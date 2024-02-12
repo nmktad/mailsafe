@@ -142,11 +142,10 @@ COPY "pgsodium"."key" ("id", "status", "created", "expires", "key_type", "key_id
 -- Data for Name: mails; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "public"."mails" ("id", "from", "to", "subject", "text", "createdAt") FROM stdin;
-clshw9f1v00046h8gpxffs9cm	nmktadesse@gmail.com	contact.hable.mekonnen@gmail.com	Checking the app	Hey there hable	2024-02-11 19:24:23.54
-clsi0p7qu0000hufzbo2yn2u7	contact.hable.mekonnen@gmail.com	contact.hable.mekonnen@gmail.com	Whatnowj	jjust working	2024-02-11 21:28:39.029
-clsicd86t0000wxaw5nis8nib	contact.hable.mekonnen@gmail.com	contact.hable.mekonnen@gmail.com	Displacement position	hi there hable	2024-02-12 02:55:15.124
-clsie58bt0000c8lp8o1bur24	contact.hable.mekonnen@gmail.com	nmktadesse@gmail.com	Testing	this definitely worked	2024-02-12 03:45:01.289
+COPY "public"."mails" ("id", "from", "to", "subject", "text", "createdAt", "hash") FROM stdin;
+clsinjg1p0006bhkkgdq38oez	nmktadesse@gmail.com	nmktadesse@gmail.com	Congratulations	Hi Nati	2024-02-12 08:08:01.022	5baed3d5639709c18318a9858a7c9668de9239a6b6ee5b98e58068bf9274cd3f
+clsinuf3a0000i9s8qa64fl3a	nmktadesse@gmail.com	nmktadesse@gmail.com	Congratulations	Congratulations to you 	2024-02-12 08:16:32.999	bce598d4fed23adf071a8ae57463273689fd6932643939914da3c180a78f8eb0
+clsinv9aq0001i9s8t5wqkl9j	nmktadesse@gmail.com	nahom6297@gmail.com	Congratulations	Congratulations to you too	2024-02-12 08:17:12.146	adfcc1e51169c893fcd509927081e2f276a139171e4fcb0ff2a6066253aca3f7
 \.
 
 
@@ -154,9 +153,17 @@ clsie58bt0000c8lp8o1bur24	contact.hable.mekonnen@gmail.com	nmktadesse@gmail.com	
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "public"."users" ("id", "username", "name", "email", "emailVerified", "password", "createdAt", "updatedAt", "role") FROM stdin;
-clshw5rdh00026h8gja7ajtbo	\N	\N	contact.hable.mekonnen@gmail.com	2024-02-11 19:22:54.661	$2a$12$7rSztFv7gaOhJPHkyViDiOPcLTCkvpGj.WAs0QjygDZGit0fslV6a	2024-02-11 19:21:32.885	2024-02-11 19:22:54.662	USER
-clshtthj400006h8gi05adwjl	\N	\N	nmktadesse@gmail.com	2024-02-11 18:17:16.907	$2a$12$x.XlxgX4a/N04YTEXT807ufMCg.FSOLtZ1GDGI8oiQ89YBZzeT5tC	2024-02-11 18:16:01.025	2024-02-11 18:17:16.908	ADMIN
+COPY "public"."users" ("id", "username", "name", "email", "emailVerified", "password", "createdAt", "updatedAt", "role", "privateKey") FROM stdin;
+clsin8lxg0000bhkkedw1ai34	\N	\N	nmktadesse@gmail.com	2024-02-12 08:00:23.159	$2a$12$98IEqSqg8/IL6n3Shk2A/e2r.D9lRTnUtQAn/8W3NRy0j/uD8O386	2024-02-12 07:59:35.428	2024-02-12 08:00:23.16	ADMIN	\N
+clsindbit0004bhkk94s8oeoo	\N	\N	nahom6297@gmail.com	2024-02-12 08:04:08.521	$2a$12$oTTJZbI.Eo6ml7Sh078OgeieQXeN.jTAAfBBpwg/71G1NP0/YgBuW	2024-02-12 08:03:15.221	2024-02-12 08:04:08.522	USER	\N
+\.
+
+
+--
+-- Data for Name: puk; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "public"."puk" ("id", "key", "createdAt", "userId") FROM stdin;
 \.
 
 
@@ -165,6 +172,7 @@ clshtthj400006h8gi05adwjl	\N	\N	nmktadesse@gmail.com	2024-02-11 18:17:16.907	$2a
 --
 
 COPY "public"."verifications" ("id", "otp", "expiresAt", "email") FROM stdin;
+clsinctbd0003bhkkipmgucvy	73593	2024-02-12 08:07:51.625	contact.hable.mekonnen@gmail.com
 \.
 
 

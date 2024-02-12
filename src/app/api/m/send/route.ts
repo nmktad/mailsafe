@@ -1,5 +1,7 @@
 import { db } from "@/lib/db";
+import { computeHash } from "@/lib/utils";
 import { emailSchema } from "@/lib/validations/auth";
+import * as crypto from 'crypto';
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -30,7 +32,8 @@ export async function POST(req: NextRequest) {
             from: user?.email!,
             to: data.to,
             subject: data.subject,
-            text: data.message
+            text: data.message,
+            hash: computeHash({ subject: data.subject, message: data.message }),
         },
     });
 
