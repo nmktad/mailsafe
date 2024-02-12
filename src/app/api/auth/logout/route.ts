@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
     const response = new NextResponse(JSON.stringify({ status: "success" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -14,6 +14,11 @@ export async function GET(req: NextRequest) {
         }),
         response.cookies.set({
             name: "authenticated",
+            value: "",
+            maxAge: -1,
+        }),
+        response.cookies.set({
+            name: "userId",
             value: "",
             maxAge: -1,
         }),

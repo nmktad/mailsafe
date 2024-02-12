@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import GoogleCaptchaWrapper from "@/components/ReCaptchaWrapper";
+import GoogleCaptchaWrapper from "@/components/reCaptchaWrapper";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <GoogleCaptchaWrapper>
-        <body className={inter.className}>{children}</body>
+        <body className={cn(inter.className)}>{children}</body>
       </GoogleCaptchaWrapper>
     </html>
   );

@@ -65,7 +65,7 @@ export function AuthLoginForm({ className, ...props }: UserAuthFormProps) {
             });
         }
 
-        return router.push("/m/inbox");
+        return router.push("/m");
     }
 
     return (

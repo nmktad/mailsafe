@@ -22,6 +22,12 @@ export async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith("/login") && (!token || redirectToLogin))
     return;
 
+  if (req.nextUrl.pathname.startsWith("/m") && !token) {
+    return NextResponse.redirect(
+      new URL(`/login?${new URLSearchParams({ forceLogin: "true" })}`, req.url)
+    );
+  }
+
   if (
     !token &&
     (req.nextUrl.pathname.startsWith("/api/users") ||
@@ -78,13 +84,13 @@ export async function middleware(req: NextRequest) {
   }
 
   if (req.url.includes("/login") && authUser) {
-    return NextResponse.redirect(new URL("/m/inbox", req.url));
+    return NextResponse.redirect(new URL("/m", req.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/profile", "/login", '/register', '/m/:path*', "/api/users/:path*", "/api/auth/logout"],
+  matcher: ["/profile", "/login", "/register", "/api/m/:path*", '/m/:path*', "/api/users/:path*", "/api/auth/logout"],
 };
 

@@ -36,7 +36,19 @@ model Verification {
   @@map(name: "verifications")
 }
 
+model Mail {
+  id        String   @id @default(cuid())
+  from      String
+  to        String
+  subject   String
+  text      String
+  createdAt DateTime @default(now())
+
+  @@map(name: "mails")
+}
+
 enum Role {
   USER
   ADMIN
 }
+
