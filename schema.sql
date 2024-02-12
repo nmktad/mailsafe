@@ -12,7 +12,7 @@ SET row_security = off;
 
 CREATE SCHEMA IF NOT EXISTS "public";
 
-ALTER SCHEMA "public" OWNER TO "pg_database_owner";
+ALTER SCHEMA "public" OWNER TO "postgres";
 
 CREATE TYPE "public"."Role" AS ENUM (
     'USER',
@@ -31,10 +31,20 @@ CREATE TABLE IF NOT EXISTS "public"."mails" (
     "to" "text" NOT NULL,
     "subject" "text" NOT NULL,
     "text" "text" NOT NULL,
-    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "hash" "text" NOT NULL
 );
 
 ALTER TABLE "public"."mails" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."puk" (
+    "id" "text" NOT NULL,
+    "key" "text" NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "userId" "text" NOT NULL
+);
+
+ALTER TABLE "public"."puk" OWNER TO "postgres";
 
 CREATE TABLE IF NOT EXISTS "public"."users" (
     "id" "text" NOT NULL,
@@ -45,7 +55,8 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "password" "text" NOT NULL,
     "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updatedAt" timestamp(3) without time zone NOT NULL,
-    "role" "public"."Role" DEFAULT 'USER'::"public"."Role" NOT NULL
+    "role" "public"."Role" DEFAULT 'USER'::"public"."Role" NOT NULL,
+    "privateKey" "text"
 );
 
 ALTER TABLE "public"."users" OWNER TO "postgres";
@@ -62,11 +73,16 @@ ALTER TABLE "public"."verifications" OWNER TO "postgres";
 ALTER TABLE ONLY "public"."mails"
     ADD CONSTRAINT "mails_pkey" PRIMARY KEY ("id");
 
+ALTER TABLE ONLY "public"."puk"
+    ADD CONSTRAINT "puk_pkey" PRIMARY KEY ("id");
+
 ALTER TABLE ONLY "public"."users"
     ADD CONSTRAINT "users_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."verifications"
     ADD CONSTRAINT "verifications_pkey" PRIMARY KEY ("id");
+
+CREATE UNIQUE INDEX "puk_userId_key" ON "public"."puk" USING "btree" ("userId");
 
 CREATE INDEX "users_email_idx" ON "public"."users" USING "btree" ("email");
 
@@ -74,36 +90,9 @@ CREATE UNIQUE INDEX "users_email_key" ON "public"."users" USING "btree" ("email"
 
 CREATE INDEX "verifications_email_idx" ON "public"."verifications" USING "btree" ("email");
 
-GRANT USAGE ON SCHEMA "public" TO "postgres";
-GRANT USAGE ON SCHEMA "public" TO "anon";
-GRANT USAGE ON SCHEMA "public" TO "authenticated";
-GRANT USAGE ON SCHEMA "public" TO "service_role";
+ALTER TABLE ONLY "public"."puk"
+    ADD CONSTRAINT "puk_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON UPDATE CASCADE ON DELETE RESTRICT;
 
-GRANT ALL ON TABLE "public"."mails" TO "anon";
-GRANT ALL ON TABLE "public"."mails" TO "authenticated";
-GRANT ALL ON TABLE "public"."mails" TO "service_role";
-
-GRANT ALL ON TABLE "public"."users" TO "anon";
-GRANT ALL ON TABLE "public"."users" TO "authenticated";
-GRANT ALL ON TABLE "public"."users" TO "service_role";
-
-GRANT ALL ON TABLE "public"."verifications" TO "anon";
-GRANT ALL ON TABLE "public"."verifications" TO "authenticated";
-GRANT ALL ON TABLE "public"."verifications" TO "service_role";
-
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "postgres";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "anon";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "authenticated";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "service_role";
-
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "postgres";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "anon";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "authenticated";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "service_role";
-
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "postgres";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "anon";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "authenticated";
-ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "service_role";
+REVOKE USAGE ON SCHEMA "public" FROM PUBLIC;
 
 RESET ALL;
